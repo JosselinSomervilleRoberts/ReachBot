@@ -8,7 +8,7 @@
 import pyrealsense2 as rs
 import numpy as np
 import cv2
-
+import datetime
 # Configure depth and color streams
 pipeline = rs.pipeline()
 config = rs.config()
@@ -33,7 +33,7 @@ config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 if device_product_line == 'L500':
     config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
 else:
-    config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+    config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
 
 # Start streaming
 pipeline.start(config)
@@ -68,7 +68,15 @@ try:
         # Show images
         cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
         cv2.imshow('RealSense', images)
-        cv2.waitKey(1)
+        k = cv2.waitKey(25)
+        if k == 27:         # wait for ESC key to exit
+            cv2.destroyAllWindows()
+            break
+        elif k == ord('s'): # wait for 's' key to save and exit
+            cv2.imwrite(f'{datetime.datetime.now().strftime("images_saved/%Y-%m-%d_%H-%M-%S")}.png',color_image)
+            cv2.imwrite(f'{datetime.datetime.now().strftime("images_saved/%Y-%m-%d_%H-%M-%S_depth")}.png',depth_colormap)
+            
+        
 
 finally:
 
